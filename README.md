@@ -13,6 +13,12 @@ This guide provides an in-depth explanation of different methods for converting 
   - [Examples with Different Data Structures](#examples-with-different-data-structures)
   - [Comparison with Other Methods](#comparison-with-other-methods)
   - [Best Practices and Use Cases](#best-practices-and-use-cases)
+- [String Literals vs. new String()](#string-literals-vs-new-string)
+  - [String Pool in Java](#string-pool-in-java)
+  - [Memory Allocation](#memory-allocation)
+  - [String Comparison](#string-comparison)
+  - [Performance Considerations](#performance-considerations)
+  - [Common Interview Questions](#common-interview-questions)
 - [Visual Comparison](#visual-comparison)
 - [When to Use Each Method](#when-to-use-each-method)
 - [Examples](#examples)
@@ -379,6 +385,204 @@ System.out.println(result);
 ```
 
 This example demonstrates how String.join() can be used to convert a HashSet (which removes duplicates) back into a space-delimited string.
+
+## String Literals vs. new String()
+
+Understanding the difference between string literals and strings created with the `new` keyword is crucial for Java developers. This section explores what happens when we use different approaches to create strings in Java.
+
+### String Pool in Java
+
+The String Pool (also known as the String Constant Pool) is a special memory area in Java's heap memory where string literals are stored. It's designed to optimize memory usage by reusing string objects.
+
+```java
+String s1 = "hello";        // Creates a string literal in the String Pool
+String s2 = "hello";        // Reuses the same string object from the Pool
+String s3 = new String("hello");  // Creates a new object in the heap memory
+```
+
+#### How the String Pool Works
+
+1. When a string literal is created (e.g., `String s = "hello"`), Java first checks if the string already exists in the pool.
+2. If it exists, Java returns a reference to the pooled instance.
+3. If it doesn't exist, a new string object is created in the pool, and a reference is returned.
+
+### Memory Allocation
+
+The key difference between string literals and strings created with `new String()` is where they are stored in memory:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                                                             │
+│                        Java Heap Memory                     │
+│                                                             │
+│  ┌─────────────────────┐         ┌─────────────────────┐   │
+│  │                     │         │                     │   │
+│  │   String Pool       │         │   Regular Heap      │   │
+│  │                     │         │                     │   │
+│  │   ┌─────────────┐   │         │   ┌─────────────┐   │   │
+│  │   │ "hello"     │◄──┼─────────┼───┤ s1, s2      │   │   │
+│  │   └─────────────┘   │         │   └─────────────┘   │   │
+│  │                     │         │                     │   │
+│  │                     │         │   ┌─────────────┐   │   │
+│  │                     │         │   │ new String  │   │   │
+│  │                     │         │   │ ("hello")   │◄──┼───┤ s3
+│  │                     │         │   └─────────────┘   │   │
+│  │                     │         │                     │   │
+│  └─────────────────────┘         └─────────────────────┘   │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+#### String Literals (s1, s2)
+- Stored in the String Pool
+- Memory efficient as identical literals share the same memory
+- Created at compile time
+
+#### new String() (s3)
+- Always creates a new object in the heap memory
+- Not stored in the String Pool by default
+- Created at runtime
+
+### String Comparison
+
+The way strings are stored affects how they should be compared:
+
+```java
+String s1 = "hello";
+String s2 = "hello";
+String s3 = new String("hello");
+
+// Reference comparison (checks if they are the same object)
+System.out.println(s1 == s2);      // true (both reference the same object in the pool)
+System.out.println(s1 == s3);      // false (different objects in memory)
+
+// Content comparison (checks if they contain the same characters)
+System.out.println(s1.equals(s3)); // true (both contain "hello")
+```
+
+#### Forcing a String into the Pool
+
+You can explicitly add a string to the pool using the `intern()` method:
+
+```java
+String s3 = new String("hello");
+String s4 = s3.intern();  // Returns the pooled instance of "hello"
+
+System.out.println(s1 == s4);  // true (s4 now references the pooled instance)
+```
+
+### Performance Considerations
+
+Using string literals instead of `new String()` can lead to better performance:
+
+1. **Memory Efficiency**: String literals reduce memory usage through reuse
+2. **Faster Comparison**: `==` operator can be used for comparing pooled strings (though using `.equals()` is still recommended for safety)
+3. **Reduced Garbage Collection**: Fewer objects created means less work for the garbage collector
+
+### Common Interview Questions
+
+Here are some common interview questions about string literals vs. `new String()`:
+
+#### 1. What will be the output of the following code?
+
+```java
+String s1 = "hello";
+String s2 = "hello";
+String s3 = new String("hello");
+String s4 = "hel" + "lo";  // Compile-time constant
+String s5 = "hel" + new String("lo");  // Not a compile-time constant
+
+System.out.println(s1 == s2);  // true
+System.out.println(s1 == s3);  // false
+System.out.println(s1 == s4);  // true
+System.out.println(s1 == s5);  // false
+```
+
+#### 2. How many string objects are created in the following code?
+
+```java
+String s1 = "hello";  // 1 object in the pool
+String s2 = "hello";  // 0 new objects (reuses the pooled object)
+String s3 = new String("hello");  // 1 new object in the heap
+```
+
+Answer: 2 objects (1 in the pool, 1 in the heap)
+
+#### 3. What's the difference between `==` and `.equals()` for string comparison?
+
+- `==` compares object references (memory addresses)
+- `.equals()` compares the content of the strings
+
+#### 4. How can you force a string created with `new` to be added to the String Pool?
+
+```java
+String s3 = new String("hello");
+String s4 = s3.intern();  // Adds "hello" to the pool if not already there
+```
+
+#### 5. Why is using string literals generally preferred over `new String()`?
+
+- Memory efficiency (reuse through the String Pool)
+- Better performance for string-heavy applications
+- Simpler code (no need for explicit object creation)
+
+### Running the StringPoolDemo Program
+
+To see these concepts in action, you can run the `StringPoolDemo` program included in this repository:
+
+1. Compile the project using Maven or your IDE
+2. Run the `run_string_pool_demo.bat` file or execute:
+   ```
+   java -cp target\classes com.boot.StringPoolDemo
+   ```
+
+The program demonstrates:
+- String literals vs. new String() creation
+- String Pool behavior
+- Reference vs. content comparison
+- Memory addresses of string objects
+- The effect of the intern() method
+
+Sample output:
+```
+Reference Comparisons (==):
+s1 == s2: true
+s1 == s3: false
+s1 == s4: true
+s1 == s5: false
+s1 == s6: false
+s1 == s7: true
+
+Content Comparisons (equals):
+s1.equals(s2): true
+s1.equals(s3): true
+s1.equals(s4): true
+s1.equals(s5): true
+s1.equals(s6): true
+
+Memory Addresses (System.identityHashCode):
+s1: 746292446
+s2: 746292446
+s3: 1072591677
+s4: 746292446
+s5: 1523554304
+s6: 1175962212
+s7: 746292446
+
+String Concatenation:
+longString1 == longString2: true
+
+Intern Example:
+str1 == str2: false
+str1 == str3: true
+str2 == str3: false
+```
+
+This output confirms that:
+- String literals with the same value share the same memory address
+- Strings created with `new` have different memory addresses even with the same content
+- The `intern()` method returns references to pooled string instances
+- All strings with the same content are equal according to `equals()` regardless of how they were created
 
 ## Test Results
 
