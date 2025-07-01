@@ -1,6 +1,6 @@
-# Java String and Array Conversions Guide
+# Java String and Array Conversions Guide and Selenium XPath Demo
 
-This guide provides an in-depth explanation of different methods for converting between strings and arrays in Java, with a focus on when to use each approach.
+This guide provides an in-depth explanation of different methods for converting between strings and arrays in Java, with a focus on when to use each approach. It also includes a demonstration of XPath axes and CSS selectors using Selenium WebDriver.
 
 ## Table of Contents
 - [String to Array Conversions](#string-to-array-conversions)
@@ -22,6 +22,11 @@ This guide provides an in-depth explanation of different methods for converting 
 - [Visual Comparison](#visual-comparison)
 - [When to Use Each Method](#when-to-use-each-method)
 - [Examples](#examples)
+- [XPath and CSS Selector Demonstration](#xpath-and-css-selector-demonstration)
+  - [Overview](#overview)
+  - [XPath Axes Explained](#xpath-axes-explained)
+  - [CSS Selectors](#css-selectors)
+  - [Running the Demo](#running-the-demo)
 
 ## String to Array Conversions
 
@@ -627,3 +632,376 @@ As you can see, using `new String(charArray)` correctly identifies anagrams by c
 | `Arrays.toString(array)` | [elem1, elem2, ...] | Debugging, display | Any array type |
 
 Choose the right method based on your specific needs to ensure your code is both correct and readable.
+
+## XPath and CSS Selector Demonstration
+
+### Overview
+
+This project includes a comprehensive demonstration of various XPath axes and CSS selectors using Selenium WebDriver to interact with the Rediff website, particularly focusing on the Money Gainers page (https://money.rediff.com/gainers). The demonstration shows how to navigate the DOM (Document Object Model) of a webpage using different XPath axes and CSS selectors.
+
+The demonstration is implemented in the `XPathDemo.java` class and includes:
+
+1. Setting up a Chrome WebDriver using WebDriverManager
+2. Navigating to the Rediff homepage (https://www.rediff.com/)
+3. Demonstrating various XPath axes on the homepage
+4. Navigating to the Money Gainers page (https://money.rediff.com/gainers)
+5. Demonstrating more XPath axes and CSS selectors on the Money Gainers page
+
+### The DANCE Acronym for XPath Axes
+
+XPath axes can be remembered using the DANCE acronym:
+
+| Letter | Axis | Description |
+|--------|------|-------------|
+| **D** | Descendant | Elements below the current node (direct or indirect children) |
+| **A** | Ancestor | Elements above the current node (parents, grandparents, etc.) |
+| **N** | Next-sibling | Elements that come after the current node at the same level |
+| **C** | Child | Direct children of the current node |
+| **E** | Equals (self) | The current node itself |
+
+Additional important axes include:
+- **P**arent: The direct parent of the current node
+- **P**receding-sibling: Elements that come before the current node at the same level
+- **F**ollowing: All elements that come after the current node in document order
+- **P**receding: All elements that come before the current node in document order
+
+### XPath Axes Explained with Visual Representation
+
+XPath is a powerful language for navigating XML and HTML documents. It uses various axes to define relationships between elements:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                                                                 │
+│                      HTML DOM Structure                         │
+│                                                                 │
+│                           html                                  │
+│                            │                                    │
+│                            ▼                                    │
+│                           body                                  │
+│                            │                                    │
+│                            ▼                                    │
+│         ┌─────────────────┴─────────────────┐                  │
+│         │                                   │                   │
+│         ▼                                   ▼                   │
+│       header                              main                  │
+│         │                                   │                   │
+│         ▼                                   ▼                   │
+│  ┌──────┴──────┐                    ┌──────┴──────┐            │
+│  │             │                    │             │             │
+│  ▼             ▼                    ▼             ▼             │
+│ logo         navbar               table        sidebar          │
+│                │                    │                           │
+│                ▼                    ▼                           │
+│         ┌──────┴──────┐     ┌──────┴──────┐                    │
+│         │             │     │             │                     │
+│         ▼             ▼     ▼             ▼                     │
+│       link1         link2  row1          row2                   │
+│                             │             │                     │
+│                             ▼             ▼                     │
+│                      ┌──────┴──────┐    ┌─┴───┐                 │
+│                      │             │    │     │                 │
+│                      ▼             ▼    ▼     ▼                 │
+│                     cell1         cell2 ...   ...               │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+#### 1. Parent to Child (Direct Child)
+- XPath: `//div[@class='navbar']/ul/li`
+- Selects all `li` elements that are direct children of a `ul` element, which is a direct child of a `div` with class 'navbar'
+- Visual representation:
+  ```
+  div.navbar → ul → li
+  ```
+
+#### 2. Parent to Child (All Descendants)
+- XPath: `//div[@class='navbar']//a`
+- Selects all `a` elements that are descendants (at any level) of a `div` with class 'navbar'
+- Visual representation:
+  ```
+  div.navbar
+     ↓
+    ...
+     ↓
+     a
+  ```
+
+#### 3. Child to Parent
+- XPath: `//a[contains(text(), 'Money')]/parent::*`
+- Selects the parent element of an `a` element containing the text 'Money'
+- Visual representation:
+  ```
+  parent-element
+     ↑
+  a[text()='Money']
+  ```
+
+#### 4. Child to Ancestor
+- XPath: `//a[contains(text(), 'Money')]/ancestor::div[1]`
+- Selects the first `div` ancestor of an `a` element containing the text 'Money'
+- Visual representation:
+  ```
+  div (ancestor)
+     ↑
+    ...
+     ↑
+  a[text()='Money']
+  ```
+
+#### 5. Following-sibling (Child to Child)
+- XPath: `//a[contains(text(), 'Money')]/following-sibling::*`
+- Selects all siblings that come after an `a` element containing the text 'Money'
+- Visual representation:
+  ```
+  parent
+     ↓
+  a[text()='Money'] → sibling1 → sibling2 → ...
+  ```
+
+#### 6. Preceding-sibling (Child to Child)
+- XPath: `//a[contains(text(), 'Money')]/preceding-sibling::*`
+- Selects all siblings that come before an `a` element containing the text 'Money'
+- Visual representation:
+  ```
+  parent
+     ↓
+  ... ← sibling2 ← sibling1 ← a[text()='Money']
+  ```
+
+### CSS Selectors with Visual Representation
+
+CSS selectors provide an alternative way to select elements in a webpage. They are often more concise than XPath but have some limitations in traversing up the DOM tree.
+
+#### Hierarchy Selectors
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                                                                 │
+│                 CSS Selector Relationships                      │
+│                                                                 │
+│  ┌─────────────┐                                                │
+│  │  Selector1  │                                                │
+│  └─────────────┘                                                │
+│        │                                                        │
+│        ├─────────────────┬─────────────────┬─────────────────┐  │
+│        │                 │                 │                 │  │
+│        ▼                 ▼                 ▼                 ▼  │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐
+│  │ Descendant  │  │Direct Child │  │  Adjacent   │  │  General    │
+│  │  (space)    │  │     (>)     │  │Sibling (+) │  │Sibling (~)  │
+│  └─────────────┘  └─────────────┘  └─────────────┘  └─────────────┘
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+1. **Space (Descendant Selector)**
+   - CSS: `div.navbar a`
+   - Selects all `a` elements that are descendants (at any level) of a `div` with class 'navbar'
+   - Example on Money Gainers page: `table.dataTable td` (selects all cells in the table)
+
+2. **> (Direct Child Selector)**
+   - CSS: `div.navbar > ul > li`
+   - Selects all `li` elements that are direct children of a `ul` element, which is a direct child of a `div` with class 'navbar'
+   - Example on Money Gainers page: `table.dataTable > tbody > tr` (selects all rows that are direct children of tbody)
+
+3. **+ (Adjacent Sibling Selector)**
+   - CSS: `td:first-child + td`
+   - Selects the `td` element that immediately follows the first `td` element
+   - Example on Money Gainers page: `table.dataTable > tbody > tr > td:first-child + td` (selects the second column in each row)
+
+4. **~ (General Sibling Selector)**
+   - CSS: `td:first-child ~ td`
+   - Selects all `td` elements that follow the first `td` element
+   - Example on Money Gainers page: `table.dataTable > tbody > tr > td:first-child ~ td` (selects all columns after the first one)
+
+#### Attribute Selectors
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                                                                 │
+│                 CSS Attribute Selectors                         │
+│                                                                 │
+│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐  │
+│  │[attribute]      │  │[attribute=value]│  │[attribute*=value]  │
+│  │Has attribute    │  │Exact match      │  │Contains value    │  │
+│  └─────────────────┘  └─────────────────┘  └─────────────────┘  │
+│                                                                 │
+│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐  │
+│  │[attribute^=value]  │[attribute$=value]  │[attribute~=value]  │
+│  │Starts with value│  │Ends with value  │  │Contains word     │  │
+│  └─────────────────┘  └─────────────────┘  └─────────────────┘  │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+1. **[attribute='value'] (Exact Match)**
+   - CSS: `[class='dataTable']`
+   - Selects elements with class attribute exactly equal to 'dataTable'
+   - Example on Money Gainers page: `table[class='dataTable']` (selects the main table)
+
+2. **[attribute*='value'] (Contains)**
+   - CSS: `[class*='data']`
+   - Selects elements with class attribute containing the substring 'data'
+   - Example on Money Gainers page: `table[class*='data']` (selects tables with 'data' in their class)
+
+3. **[attribute^='value'] (Starts With)**
+   - CSS: `[class^='data']`
+   - Selects elements with class attribute starting with 'data'
+   - Example on Money Gainers page: `a[href^='https']` (selects links with HTTPS URLs)
+
+4. **[attribute$='value'] (Ends With)**
+   - CSS: `[class$='Table']`
+   - Selects elements with class attribute ending with 'Table'
+   - Example on Money Gainers page: `a[href$='.html']` (selects links to HTML pages)
+
+#### Pseudo-classes and Pseudo-elements
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                                                                 │
+│                 CSS Pseudo Selectors                            │
+│                                                                 │
+│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐  │
+│  │:nth-child(n)    │  │:first-child     │  │:last-child      │  │
+│  │Nth child        │  │First child      │  │Last child       │  │
+│  └─────────────────┘  └─────────────────┘  └─────────────────┘  │
+│                                                                 │
+│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐  │
+│  │:nth-of-type(n)  │  │:first-of-type   │  │:last-of-type    │  │
+│  │Nth of type      │  │First of type    │  │Last of type     │  │
+│  └─────────────────┘  └─────────────────┘  └─────────────────┘  │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+1. **:nth-child(n)**
+   - CSS: `tr:nth-child(3)`
+   - Selects the 3rd child element that is a `tr`
+   - Example on Money Gainers page: `table.dataTable > tbody > tr:nth-child(3)` (selects the 3rd row in the table)
+
+2. **:first-child**
+   - CSS: `td:first-child`
+   - Selects the first `td` child of its parent
+   - Example on Money Gainers page: `table.dataTable > tbody > tr > td:first-child` (selects the first column in each row)
+
+3. **:last-child**
+   - CSS: `td:last-child`
+   - Selects the last `td` child of its parent
+   - Example on Money Gainers page: `table.dataTable > tbody > tr > td:last-child` (selects the last column in each row)
+
+### Practical Examples on Money Gainers Page (https://money.rediff.com/gainers)
+
+#### XPath Examples
+
+1. **Selecting all company names in the table**
+   - XPath: `//table[@class='dataTable']/tbody/tr/td[1]/a`
+   - This selects all company name links in the first column of the table
+
+2. **Selecting the current price of a specific company**
+   - XPath: `//a[text()='Company Name']/parent::td/following-sibling::td[3]`
+   - This selects the price cell (4th column) for a specific company
+
+3. **Selecting all rows with price greater than 100**
+   - XPath: `//table[@class='dataTable']/tbody/tr[td[4] > 100]`
+   - This selects rows where the price (4th column) is greater than 100
+
+4. **Selecting the table header row**
+   - XPath: `//table[@class='dataTable']/tbody/tr[1]`
+   - This selects the header row of the table
+
+5. **Selecting all cells in the % Change column**
+   - XPath: `//table[@class='dataTable']/tbody/tr/td[3]`
+   - This selects all cells in the % Change column (3rd column)
+
+#### CSS Selector Examples
+
+1. **Selecting all company names in the table**
+   - CSS: `table.dataTable > tbody > tr > td:first-child > a`
+   - This selects all company name links in the first column of the table
+
+2. **Selecting the second row in the table**
+   - CSS: `table.dataTable > tbody > tr:nth-child(2)`
+   - This selects the second row in the table (first data row after the header)
+
+3. **Selecting all cells in the last column**
+   - CSS: `table.dataTable > tbody > tr > td:last-child`
+   - This selects all cells in the last column of the table
+
+4. **Selecting all links in the table**
+   - CSS: `table.dataTable a`
+   - This selects all links within the table
+
+5. **Selecting cells containing specific text**
+   - CSS: `table.dataTable > tbody > tr > td:contains('text')`
+   - Note: `:contains()` is not a standard CSS selector but is available in jQuery
+
+### When to Use XPath vs. CSS Selectors
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                                                                 │
+│             XPath vs CSS Selector Decision Tree                 │
+│                                                                 │
+│                        Start                                    │
+│                          │                                      │
+│                          ▼                                      │
+│           ┌─────────────────────────────┐                       │
+│           │Need to traverse up the DOM? │                       │
+│           └─────────────────────────────┘                       │
+│                          │                                      │
+│                ┌─────────┴─────────┐                            │
+│                │                   │                            │
+│                ▼                   ▼                            │
+│               Yes                  No                           │
+│                │                   │                            │
+│                ▼                   ▼                            │
+│        ┌──────────────┐   ┌───────────────────┐                 │
+│        │  Use XPath   │   │Need text matching?│                 │
+│        └──────────────┘   └───────────────────┘                 │
+│                               │                                 │
+│                     ┌─────────┴─────────┐                       │
+│                     │                   │                       │
+│                     ▼                   ▼                       │
+│                    Yes                  No                      │
+│                     │                   │                       │
+│                     ▼                   ▼                       │
+│             ┌──────────────┐    ┌──────────────┐                │
+│             │  Use XPath   │    │   Use CSS    │                │
+│             └──────────────┘    └──────────────┘                │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+#### Use XPath when:
+1. You need to traverse up the DOM tree (parent, ancestor)
+2. You need to select elements based on text content
+3. You need to use complex predicates or conditions
+4. You need to select elements based on their position (e.g., last())
+5. You need to use axes like following-sibling, preceding-sibling
+
+#### Use CSS Selectors when:
+1. Performance is critical (CSS selectors are generally faster)
+2. You only need to traverse down the DOM tree
+3. You need simpler, more readable selectors
+4. You're working with modern web applications
+5. You're familiar with CSS styling
+
+### Running the Demo
+
+To run the XPath and CSS Selector demonstration:
+
+1. Make sure you have Maven installed
+2. Run the `run_xpath_demo.bat` file or execute:
+   ```
+   mvn compile exec:java -Dexec.mainClass="com.boot.XPathDemo"
+   ```
+
+The demonstration will:
+1. Open a Chrome browser
+2. Navigate to the Rediff homepage
+3. Print examples of various XPath axes and CSS selectors
+4. Navigate to the Money Gainers page
+5. Print more examples of XPath axes and CSS selectors
+6. Close the browser
+
+Note: The demonstration requires an internet connection to access the Rediff website.
