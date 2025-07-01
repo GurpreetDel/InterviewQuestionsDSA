@@ -4,6 +4,28 @@ This directory contains daily implementations, explanations, and analyses of var
 
 ## Available Days
 
+### [July 3rd, 2025](3rdJuly2025/README.md)
+
+**Topic: Builder Design Pattern Deep Dive**
+
+A comprehensive exploration of the Builder design pattern, including detailed explanations, class diagrams, and multiple implementations. This guide covers how the Builder pattern provides abstraction and includes examples from various domains.
+
+**Files:**
+- [README.md](3rdJuly2025/README.md) - Detailed explanation of the Builder pattern
+- [Aircraft Builder Example](../src/main/java/com/boot/designpatterns/builder/aircraft/) - Implementation of the Builder pattern for aircraft construction
+- [Document Builder Example](../src/main/java/com/boot/designpatterns/builder/document/) - Implementation of the Builder pattern for document generation
+- [Person Builder Example](../src/main/java/com/boot/designpatterns/builder/) - Simple Builder pattern implementation with Person class
+- [run_aircraft_builder_demo.bat](../run_aircraft_builder_demo.bat) - Batch file to run Aircraft Builder demo
+- [run_document_builder_demo.bat](../run_document_builder_demo.bat) - Batch file to run Document Builder demo
+- [run_all_builder_demos.bat](../run_all_builder_demos.bat) - Batch file to run all Builder pattern demos
+
+**Key Concepts:**
+- Separation of construction from representation
+- Step-by-step object construction
+- Creating different representations using the same construction process
+- Builder pattern usage in Spring Boot and Selenium
+- Comparison with other creational patterns
+
 ### [July 2nd, 2025](2ndJuly2025/README.md)
 
 **Topic: Design Patterns - Singleton and Builder**
