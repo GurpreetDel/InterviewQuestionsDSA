@@ -4,18 +4,39 @@ This directory contains daily implementations, explanations, and analyses of var
 
 ## Available Days
 
-### [July 1st, 2023](./1stJuly2023/README.md)
+### [July 2nd, 2025](2ndJuly2025/README.md)
+
+**Topic: Design Patterns - Singleton and Builder**
+
+A comprehensive exploration of two important design patterns: Singleton and Builder. This guide explains the concepts, implementations, and practical applications of these patterns in Java, Spring Boot, and Selenium.
+
+**Files:**
+- [README.md](2ndJuly2025/README.md) - Detailed explanation of both design patterns
+- [Singleton implementations](../src/main/java/com/boot/designpatterns/singleton/) - Various Singleton pattern implementations
+- [Builder implementation](../src/main/java/com/boot/designpatterns/builder/) - Builder pattern implementation with Person class
+- [run_singleton_demo.bat](../run_singleton_demo.bat) - Batch file to run Singleton pattern demo
+- [run_builder_demo.bat](../run_builder_demo.bat) - Batch file to run Builder pattern demo
+- [run_design_patterns_demo.bat](../run_design_patterns_demo.bat) - Batch file to run both demos
+
+**Key Concepts:**
+- Singleton pattern and thread safety considerations
+- Builder pattern for complex object creation
+- Design pattern usage in Spring Boot and Selenium
+- Immutability and fluent interfaces
+- Practical implementation examples
+
+### [July 1st, 2025](1stJuly2025/README.md)
 
 **Topic: SortedSquares Algorithm**
 
 A deep dive into the SortedSquares algorithm, which efficiently squares each element in a sorted array and returns the result in sorted order.
 
 **Files:**
-- [README.md](./1stJuly2023/README.md) - Detailed explanation of the algorithm
-- [SortedSquares.java](./1stJuly2023/SortedSquares.java) - Java implementation
-- [SortedSquaresTest.java](./1stJuly2023/SortedSquaresTest.java) - Test cases
-- [algorithm_visualization.md](./1stJuly2023/algorithm_visualization.md) - Visual representation of the algorithm
-- [run_sorted_squares_test.bat](./1stJuly2023/run_sorted_squares_test.bat) - Batch file to compile and run tests
+- [README.md](1stJuly2025/README.md) - Detailed explanation of the algorithm
+- [SortedSquares.java](1stJuly2025/SortedSquares.java) - Java implementation
+- [SortedSquaresTest.java](1stJuly2025/SortedSquaresTest.java) - Test cases
+- [algorithm_visualization.md](1stJuly2025/algorithm_visualization.md) - Visual representation of the algorithm
+- [run_sorted_squares_test.bat](1stJuly2025/run_sorted_squares_test.bat) - Batch file to compile and run tests
 
 **Key Concepts:**
 - Two-pointer technique
