@@ -1,6 +1,6 @@
-# Java String and Array Conversions Guide and Selenium XPath Demo
+# Java String and Array Conversions Guide and Selenium XPath Demo with TestNG
 
-This guide provides an in-depth explanation of different methods for converting between strings and arrays in Java, with a focus on when to use each approach. It also includes a demonstration of XPath axes and CSS selectors using Selenium WebDriver.
+This guide provides an in-depth explanation of different methods for converting between strings and arrays in Java, with a focus on when to use each approach. It also includes a demonstration of XPath axes and CSS selectors using Selenium WebDriver, and advanced testing techniques with TestNG.
 
 ## Table of Contents
 - [String to Array Conversions](#string-to-array-conversions)
@@ -27,6 +27,13 @@ This guide provides an in-depth explanation of different methods for converting 
   - [XPath Axes Explained](#xpath-axes-explained)
   - [CSS Selectors](#css-selectors)
   - [Running the Demo](#running-the-demo)
+- [TestNG Advanced Testing Features](#testng-advanced-testing-features)
+  - [Parallel Test Execution](#parallel-test-execution)
+  - [Test Groups and Filtering](#test-groups-and-filtering)
+  - [Test Prioritization](#test-prioritization)
+  - [XML Parameter Passing](#xml-parameter-passing)
+  - [Data-Driven Testing with XML](#data-driven-testing-with-xml)
+  - [Running TestNG Tests](#running-testng-tests)
 
 ## String to Array Conversions
 
@@ -1005,3 +1012,468 @@ The demonstration will:
 6. Close the browser
 
 Note: The demonstration requires an internet connection to access the Rediff website.
+
+## TestNG Advanced Testing Features
+
+This project demonstrates advanced testing features using TestNG, a powerful testing framework for Java. TestNG provides numerous features that extend beyond basic unit testing, including parallel test execution, test grouping, prioritization, and data-driven testing.
+
+### Parallel Test Execution
+
+TestNG allows you to run tests in parallel to reduce the overall execution time. This is particularly useful for large test suites or tests that involve time-consuming operations like UI testing.
+
+#### How Parallel Execution Works in TestNG
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                                                                 │
+│                 TestNG Parallel Execution                       │
+│                                                                 │
+│  ┌─────────────┐                                                │
+│  │  Test Suite │                                                │
+│  └─────────────┘                                                │
+│        │                                                        │
+│        ▼                                                        │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │                Thread Pool (thread-count="2")           │   │
+│  └─────────────────────────────────────────────────────────┘   │
+│        │                           │                           │
+│        ▼                           ▼                           │
+│  ┌─────────────┐            ┌─────────────┐                    │
+│  │  Thread 1   │            │  Thread 2   │                    │
+│  └─────────────┘            └─────────────┘                    │
+│        │                           │                           │
+│        ▼                           ▼                           │
+│  ┌─────────────┐            ┌─────────────┐                    │
+│  │ LoginTest   │            │ ProfileTest │                    │
+│  └─────────────┘            └─────────────┘                    │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+#### Configuration in testng.xml
+
+Parallel execution is configured in the testng.xml file:
+
+```xml
+<suite name="ParallelTestSuite" parallel="classes" thread-count="2">
+  <!-- Test configurations -->
+</suite>
+```
+
+The `parallel` attribute can have the following values:
+- `methods`: Run test methods in parallel
+- `classes`: Run test classes in parallel
+- `tests`: Run test tags in parallel
+- `instances`: Run test instances in parallel
+
+The `thread-count` attribute specifies the number of threads to use for parallel execution.
+
+#### Benefits of Parallel Execution
+
+1. **Reduced Execution Time**: Tests run simultaneously, reducing the overall execution time
+2. **Better Resource Utilization**: Makes better use of multi-core processors
+3. **Earlier Feedback**: Get test results faster, especially for large test suites
+4. **Realistic Load Testing**: Can simulate multiple users accessing the system simultaneously
+
+### Test Groups and Filtering
+
+TestNG allows you to organize tests into groups and selectively run tests based on these groups. This is useful for categorizing tests by functionality, importance, or execution time.
+
+#### How Test Groups Work in TestNG
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                                                                 │
+│                 TestNG Test Groups                              │
+│                                                                 │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │                     All Tests                           │   │
+│  └─────────────────────────────────────────────────────────┘   │
+│        │                  │                  │                  │
+│        ▼                  ▼                  ▼                  │
+│  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐         │
+│  │ login group │    │profile group│    │security group│         │
+│  └─────────────┘    └─────────────┘    └─────────────┘         │
+│        │                  │                  │                  │
+│        ▼                  ▼                  ▼                  │
+│  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐         │
+│  │testValidLogin│    │testViewProfile│  │testAccountLockout│    │
+│  └─────────────┘    └─────────────┘    └─────────────┘         │
+│        │                                                        │
+│        ▼                                                        │
+│  ┌─────────────┐                                                │
+│  │testInvalidLogin│                                             │
+│  └─────────────┘                                                │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+#### Defining Groups in Test Methods
+
+Groups are defined using the `groups` attribute in the `@Test` annotation:
+
+```java
+@Test(groups = {"login", "positive"})
+public void testValidLogin() {
+    // Test code
+}
+
+@Test(groups = {"login", "negative"})
+public void testInvalidLogin() {
+    // Test code
+}
+```
+
+#### Selecting Groups in testng.xml
+
+You can select which groups to run in the testng.xml file:
+
+```xml
+<test name="Login Tests">
+  <groups>
+    <run>
+      <include name="login" />
+    </run>
+  </groups>
+  <classes>
+    <class name="com.boot.LoginTest" />
+  </classes>
+</test>
+```
+
+You can also exclude groups:
+
+```xml
+<groups>
+  <run>
+    <include name="login" />
+    <exclude name="negative" />
+  </run>
+</groups>
+```
+
+#### Benefits of Test Groups
+
+1. **Organized Test Suite**: Categorize tests by functionality, importance, or execution time
+2. **Selective Execution**: Run only the tests that are relevant to the current development or testing phase
+3. **Flexible Test Configuration**: Easily create different test configurations for different purposes
+4. **Better Test Management**: Easier to manage and maintain large test suites
+
+### Test Prioritization
+
+TestNG allows you to specify the order in which tests should be executed using priorities. This is useful when you have dependencies between tests or when you want to run the most important tests first.
+
+#### How Test Prioritization Works in TestNG
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                                                                 │
+│                 TestNG Test Prioritization                      │
+│                                                                 │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │                     Test Class                          │   │
+│  └─────────────────────────────────────────────────────────┘   │
+│        │                                                        │
+│        ▼                                                        │
+│  ┌─────────────┐                                                │
+│  │ priority=1  │ ──> testValidLogin()                          │
+│  └─────────────┘                                                │
+│        │                                                        │
+│        ▼                                                        │
+│  ┌─────────────┐                                                │
+│  │ priority=2  │ ──> testInvalidLogin()                        │
+│  └─────────────┘                                                │
+│        │                                                        │
+│        ▼                                                        │
+│  ┌─────────────┐                                                │
+│  │ priority=3  │ ──> testAccountLockout()                      │
+│  └─────────────┘                                                │
+│        │                                                        │
+│        ▼                                                        │
+│  ┌─────────────┐                                                │
+│  │ priority=4  │ ──> testPasswordReset()                       │
+│  └─────────────┘                                                │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+#### Setting Priorities in Test Methods
+
+Priorities are set using the `priority` attribute in the `@Test` annotation:
+
+```java
+@Test(priority = 1)
+public void testValidLogin() {
+    // Test code
+}
+
+@Test(priority = 2)
+public void testInvalidLogin() {
+    // Test code
+}
+```
+
+Lower priority values run first. If no priority is specified, the default priority is 0.
+
+#### Benefits of Test Prioritization
+
+1. **Controlled Execution Order**: Ensure tests run in a specific order
+2. **Dependency Management**: Handle dependencies between tests
+3. **Fail Fast**: Run the most important tests first to get early feedback
+4. **Logical Test Flow**: Create a logical flow of tests that mirrors user behavior
+
+### XML Parameter Passing
+
+TestNG allows you to pass parameters to test methods from the testng.xml file. This is useful for configuring tests without changing the code.
+
+#### How XML Parameter Passing Works in TestNG
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                                                                 │
+│                 TestNG XML Parameter Passing                    │
+│                                                                 │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │                     testng.xml                          │   │
+│  │  <parameter name="username" value="gurpreet" />         │   │
+│  │  <parameter name="password" value="password1" />        │   │
+│  └─────────────────────────────────────────────────────────┘   │
+│                           │                                     │
+│                           ▼                                     │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │                     Test Method                         │   │
+│  │  @Parameters({"username", "password"})                  │   │
+│  │  public void testValidLogin(String username,            │   │
+│  │                            String password) {           │   │
+│  │      // Test code using username and password           │   │
+│  │  }                                                      │   │
+│  └─────────────────────────────────────────────────────────┘   │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+#### Defining Parameters in testng.xml
+
+Parameters are defined in the testng.xml file:
+
+```xml
+<parameter name="username" value="gurpreet" />
+<parameter name="password" value="password1" />
+```
+
+Parameters can be defined at the suite, test, or class level.
+
+#### Using Parameters in Test Methods
+
+Parameters are accessed using the `@Parameters` annotation:
+
+```java
+@Test
+@Parameters({"username", "password"})
+public void testValidLogin(String username, String password) {
+    System.out.println("Testing login with username: " + username + " and password: " + password);
+    // Test code
+}
+```
+
+#### Benefits of XML Parameter Passing
+
+1. **Configuration Without Code Changes**: Change test parameters without modifying the code
+2. **Environment-Specific Configuration**: Use different parameters for different environments
+3. **Reusable Test Code**: Write test code once and run it with different parameters
+4. **Centralized Configuration**: Manage all test parameters in one place
+
+### Data-Driven Testing with XML
+
+TestNG supports data-driven testing, where the same test is run multiple times with different data. This project demonstrates how to read test data from an XML file and use it with TestNG's DataProvider feature.
+
+#### How Data-Driven Testing Works with XML
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                                                                 │
+│                 TestNG Data-Driven Testing with XML             │
+│                                                                 │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │                     credentials.xml                     │   │
+│  │  <user>                                                 │   │
+│  │    <username>gurpreet</username>                        │   │
+│  │    <password>password1</password>                       │   │
+│  │  </user>                                                │   │
+│  │  <user>                                                 │   │
+│  │    <username>username2</username>                       │   │
+│  │    <password>password2</password>                       │   │
+│  │  </user>                                                │   │
+│  └─────────────────────────────────────────────────────────┘   │
+│                           │                                     │
+│                           ▼                                     │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │                 XmlCredentialReader                     │   │
+│  │  public static List<Map<String, String>> readCredentials(│  │
+│  │                                  String xmlFilePath) {   │   │
+│  │      // Read XML and return credentials                 │   │
+│  │  }                                                      │   │
+│  └─────────────────────────────────────────────────────────┘   │
+│                           │                                     │
+│                           ▼                                     │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │                     DataProvider                        │   │
+│  │  @DataProvider(name = "credentialsProvider")            │   │
+│  │  public Object[][] credentialsProvider() {              │   │
+│  │      // Convert credentials to DataProvider format      │   │
+│  │  }                                                      │   │
+│  └─────────────────────────────────────────────────────────┘   │
+│                           │                                     │
+│                           ▼                                     │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │                     Test Method                         │   │
+│  │  @Test(dataProvider = "credentialsProvider")            │   │
+│  │  public void testLoginWithXmlCredentials(               │   │
+│  │      String username, String password, String email) {  │   │
+│  │      // Test code using credentials                     │   │
+│  │  }                                                      │   │
+│  └─────────────────────────────────────────────────────────┘   │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+#### Creating the XML Data File
+
+The credentials.xml file contains user credentials:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<credentials>
+  <user>
+    <username>gurpreet</username>
+    <password>password1</password>
+    <email>gurpreet@example.com</email>
+  </user>
+  <user>
+    <username>username2</username>
+    <password>password2</password>
+    <email>user2@example.com</email>
+  </user>
+</credentials>
+```
+
+#### Reading XML Data with a Utility Class
+
+The XmlCredentialReader class reads credentials from the XML file:
+
+```java
+public static List<Map<String, String>> readCredentials(String xmlFilePath) {
+    List<Map<String, String>> users = new ArrayList<>();
+
+    try {
+        File xmlFile = new File(xmlFilePath);
+        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+        Document doc = dBuilder.parse(xmlFile);
+
+        // Process XML and extract credentials
+        // ...
+
+    } catch (Exception e) {
+        System.err.println("Error reading credentials XML: " + e.getMessage());
+    }
+
+    return users;
+}
+```
+
+#### Using XML Data with DataProvider
+
+The DataProvider method converts the XML data to the format required by TestNG:
+
+```java
+@DataProvider(name = "credentialsProvider")
+public Object[][] credentialsProvider() {
+    List<Map<String, String>> users = XmlCredentialReader.readCredentials("credentials.xml");
+
+    Object[][] data = new Object[users.size()][3];
+    for (int i = 0; i < users.size(); i++) {
+        Map<String, String> user = users.get(i);
+        data[i][0] = user.get("username");
+        data[i][1] = user.get("password");
+        data[i][2] = user.get("email");
+    }
+
+    return data;
+}
+```
+
+#### Using the DataProvider in Test Methods
+
+The test method uses the DataProvider to run with multiple sets of credentials:
+
+```java
+@Test(dataProvider = "credentialsProvider", groups = {"dataprovider"})
+public void testLoginWithXmlCredentials(String username, String password, String email) {
+    System.out.println("Testing login with credentials from XML:");
+    System.out.println("  Username: " + username);
+    System.out.println("  Password: " + password);
+    System.out.println("  Email: " + email);
+
+    // Test code
+}
+```
+
+#### Benefits of Data-Driven Testing with XML
+
+1. **Separation of Test Data and Test Code**: Store test data separately from test code
+2. **Reusable Test Data**: Use the same test data for multiple tests
+3. **Easy Data Maintenance**: Update test data without changing test code
+4. **Comprehensive Test Coverage**: Test with multiple data sets to ensure thorough coverage
+
+### Running TestNG Tests
+
+This project includes a batch file to run the TestNG tests using Maven.
+
+#### Running Tests with Maven
+
+The run_testng_tests.bat file contains:
+
+```batch
+@echo off
+echo Running TestNG Tests...
+call mvn clean test -DsuiteXmlFile=testng.xml
+echo Tests completed.
+pause
+```
+
+This command runs the tests defined in the testng.xml file.
+
+#### Running Specific Test Groups
+
+To run specific test groups, you can use the testng.xml file to define which groups to include or exclude, or you can use Maven command-line options:
+
+```batch
+mvn clean test -DsuiteXmlFile=testng.xml -Dgroups=login,positive
+```
+
+#### Running Tests in Parallel
+
+The parallel execution is configured in the testng.xml file:
+
+```xml
+<suite name="ParallelTestSuite" parallel="classes" thread-count="2">
+  <!-- Test configurations -->
+</suite>
+```
+
+#### Viewing Test Results
+
+TestNG generates detailed test reports in the target/surefire-reports directory, including:
+- HTML reports
+- XML reports
+- Plain text reports
+
+These reports show test results, execution times, and any failures or errors.
+
+#### Benefits of Using TestNG with Maven
+
+1. **Integrated Build Process**: Run tests as part of the build process
+2. **Consistent Execution Environment**: Ensure tests run in the same environment
+3. **Detailed Reporting**: Generate comprehensive test reports
+4. **Flexible Configuration**: Configure tests using XML or command-line options
