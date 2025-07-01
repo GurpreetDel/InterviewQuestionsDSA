@@ -18,7 +18,7 @@ public class SortedSquares {
         int[] result = new int[n];
 
         // Sort the input array first
-        Arrays.sort(nums);
+        //Arrays.sort(nums);
 
         int smallerIdx=0;
         int largerIDx=nums.length-1;
