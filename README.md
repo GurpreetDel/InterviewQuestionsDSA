@@ -34,6 +34,10 @@ This guide provides an in-depth explanation of different methods for converting 
   - [XML Parameter Passing](#xml-parameter-passing)
   - [Data-Driven Testing with XML](#data-driven-testing-with-xml)
   - [Running TestNG Tests](#running-testng-tests)
+- [Excel File Reading with Apache POI](#excel-file-reading-with-apache-poi)
+  - [HSSF vs XSSF](#hssf-vs-xssf)
+  - [Reading Excel Data with HashMap](#reading-excel-data-with-hashmap)
+  - [Using Excel Data with DataProvider](#using-excel-data-with-dataprovider)
 
 ## String to Array Conversions
 
@@ -1477,3 +1481,141 @@ These reports show test results, execution times, and any failures or errors.
 2. **Consistent Execution Environment**: Ensure tests run in the same environment
 3. **Detailed Reporting**: Generate comprehensive test reports
 4. **Flexible Configuration**: Configure tests using XML or command-line options
+
+## Excel File Reading with Apache POI
+
+This project includes a utility for reading data from Excel files using Apache POI. The utility uses HashMap instead of NodeList for simpler data access and provides methods for reading both .xls and .xlsx file formats.
+
+### HSSF vs XSSF
+
+Apache POI provides two main APIs for working with Excel files:
+
+1. **HSSF (Horrible SpreadSheet Format)**: For working with Excel 97-2003 (.xls) files
+   - Uses the `HSSFWorkbook` class
+   - Smaller memory footprint for smaller files
+   - Limited to 65,536 rows per sheet
+
+2. **XSSF (XML SpreadSheet Format)**: For working with Excel 2007+ (.xlsx) files
+   - Uses the `XSSFWorkbook` class
+   - Based on the Office Open XML standards
+   - Supports up to 1,048,576 rows per sheet
+   - Better for larger files and modern Excel features
+
+Our utility automatically detects the file format based on the file extension and uses the appropriate API:
+
+```java
+private static Workbook getWorkbook(FileInputStream fis, String filePath) throws IOException {
+    if (filePath.toLowerCase().endsWith(".xlsx")) {
+        return new XSSFWorkbook(fis);
+    } else if (filePath.toLowerCase().endsWith(".xls")) {
+        return new HSSFWorkbook(fis);
+    } else {
+        throw new IllegalArgumentException("Not an Excel file: " + filePath);
+    }
+}
+```
+
+### Reading Excel Data with HashMap
+
+The traditional approach to reading Excel data often involves using NodeList or similar structures, which can be cumbersome to work with. Our utility uses HashMap for simpler and more intuitive data access:
+
+```java
+public static List<Map<String, String>> readExcelData(String filePath, String sheetName, boolean hasHeaderRow) throws IOException {
+    List<Map<String, String>> data = new ArrayList<>();
+
+    try (FileInputStream fis = new FileInputStream(new File(filePath));
+         Workbook workbook = getWorkbook(fis, filePath)) {
+
+        // Get the specified sheet
+        Sheet sheet = (sheetName != null && !sheetName.isEmpty()) 
+            ? workbook.getSheet(sheetName) 
+            : workbook.getSheetAt(0);
+
+        // Get column headers if the first row contains headers
+        String[] headers = null;
+        int startRow = 0;
+
+        if (hasHeaderRow) {
+            Row headerRow = sheet.getRow(0);
+            if (headerRow != null) {
+                headers = new String[headerRow.getLastCellNum()];
+                for (int i = 0; i < headerRow.getLastCellNum(); i++) {
+                    Cell cell = headerRow.getCell(i);
+                    headers[i] = (cell != null) ? getCellValueAsString(cell) : "Column" + (i + 1);
+                }
+                startRow = 1;
+            }
+        }
+
+        // Read data rows
+        for (int i = startRow; i <= sheet.getLastRowNum(); i++) {
+            Row row = sheet.getRow(i);
+            if (row == null) continue;
+
+            Map<String, String> rowData = new HashMap<>();
+
+            for (int j = 0; j < (headers != null ? headers.length : row.getLastCellNum()); j++) {
+                Cell cell = row.getCell(j);
+                String value = (cell != null) ? getCellValueAsString(cell) : "";
+
+                // Use header name as key if available, otherwise use column index
+                String key = (headers != null) ? headers[j] : "Column" + (j + 1);
+                rowData.put(key, value);
+            }
+
+            data.add(rowData);
+        }
+    }
+
+    return data;
+}
+```
+
+#### Advantages of Using HashMap
+
+1. **Simpler Access**: Access data by column name (e.g., `row.get("Name")`) instead of navigating through a node hierarchy
+2. **Better Performance**: HashMap provides O(1) access time for retrieving values
+3. **More Intuitive**: The code is more readable and easier to understand
+4. **Type Safety**: The data structure is more strongly typed
+5. **Less Boilerplate**: Requires less code to access and manipulate data
+
+### Using Excel Data with DataProvider
+
+The ExcelReader utility can be easily integrated with TestNG's DataProvider feature to create data-driven tests using Excel data:
+
+```java
+@DataProvider(name = "excelDataProvider")
+public Object[][] excelDataProvider() throws IOException {
+    // Read data from Excel file
+    List<Map<String, String>> excelData = ExcelReader.readExcelData("testdata.xlsx", "Users", true);
+
+    // Convert to Object[][] for DataProvider
+    Object[][] data = new Object[excelData.size()][3];
+    for (int i = 0; i < excelData.size(); i++) {
+        Map<String, String> row = excelData.get(i);
+        data[i][0] = row.get("Username");
+        data[i][1] = row.get("Password");
+        data[i][2] = row.get("Email");
+    }
+
+    return data;
+}
+
+@Test(dataProvider = "excelDataProvider", groups = {"excel"})
+public void testWithExcelData(String username, String password, String email) {
+    System.out.println("Testing with data from Excel:");
+    System.out.println("  Username: " + username);
+    System.out.println("  Password: " + password);
+    System.out.println("  Email: " + email);
+
+    // Test code using the Excel data
+}
+```
+
+This approach allows you to:
+1. Store test data in Excel files, which are easy to create and maintain
+2. Separate test data from test code
+3. Use the same Excel file for multiple tests
+4. Update test data without changing test code
+
+For more detailed information about the ExcelReader utility, see the [README_EXCEL.md](README_EXCEL.md) file.
