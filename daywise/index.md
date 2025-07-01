@@ -4,6 +4,26 @@ This directory contains daily implementations, explanations, and analyses of var
 
 ## Available Days
 
+### [July 4th, 2025](4thJuly2025/README.md)
+
+**Topic: Singleton Pattern Deep Dive**
+
+A comprehensive exploration of the Singleton design pattern, focusing on the AirforceOne example. This guide covers what the Singleton pattern is, how it works, thread safety considerations, and different implementation approaches.
+
+**Files:**
+- [README.md](4thJuly2025/README.md) - Detailed explanation of the Singleton pattern
+- [AirforceOne.java](../src/main/java/com/boot/designpatterns/singleton/AirforceOne.java) - Basic Singleton implementation
+- [Client.java](../src/main/java/com/boot/designpatterns/singleton/Client.java) - Client class demonstrating usage
+- [AirforceOneDemo.java](../src/main/java/com/boot/designpatterns/singleton/AirforceOneDemo.java) - Demonstration class
+- [run_airforce_one_demo.bat](../run_airforce_one_demo.bat) - Batch file to run the demonstration
+
+**Key Concepts:**
+- Ensuring only one instance of a class exists
+- Thread safety in Singleton implementations
+- Different Singleton implementation approaches
+- When to use the Singleton pattern
+- Real-world applications of Singletons
+
 ### [July 3rd, 2025](3rdJuly2025/README.md)
 
 **Topic: Builder Design Pattern Deep Dive**
